@@ -14,12 +14,12 @@ package Time::Piece;
 
 use Time::Seconds;
 
-BEGIN
-{
-    my $has_dst_bug =
-	Time::Piece->strptime( '20000601120000', '%Y%m%d%H%M%S' )->hour != 12;
-    sub HAS_DST_BUG () { $has_dst_bug }
-}
+# BEGIN
+# {
+#     my $has_dst_bug =
+# 	Time::Piece->strptime( '20000601120000', '%Y%m%d%H%M%S' )->hour != 12;
+#     sub HAS_DST_BUG () { $has_dst_bug }
+# }
 
 sub db2_date
 {
@@ -33,7 +33,7 @@ sub db2_date
 sub db2_time
 {
     my $self = shift;
-    my $old_sep = $self->time_separator('.');
+    my $old_sep = $self->time_separator(':');
     my $hms = $self->hms;
     $self->time_separator($old_sep);
     return $hms;
@@ -42,7 +42,7 @@ sub db2_time
 sub db2_timestamp
 {
     my $self = shift;
-    return join '-', $self->db2_date, $self->db2_time;
+    return join ' ', $self->db2_date, $self->db2_time;
 }
 
 sub from_db2_date
@@ -53,15 +53,16 @@ sub from_db2_date
 
 sub from_db2_time
 {
-    my $class = shift;
-    return $class->strptime( shift, '%H.%M.%S' );
+    my ($class,$tstamp) = @_;
+    $tstamp = substr($tstamp,0,length($tstamp)-7);
+    return $class->strptime( $tstamp, '%H:%M:%S' );
 }
 
 sub from_db2_timestamp
 {
-    my $class = shift;
-    my $time = $class->strptime( shift, '%Y-%m-%d-%H.%M.%S' );
-    $time -= ONE_HOUR if HAS_DST_BUG && $time->isdst;
+    my ($class,$tstamp) = @_;
+    $tstamp = substr($tstamp,0,length($tstamp)-7);
+    my $time = $class->strptime( $tstamp, '%Y-%m-%d %H:%M:%S' );
     return $time;
 }
 
