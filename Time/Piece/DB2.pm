@@ -132,7 +132,7 @@ unpredictable results.
 
 =head1 AUTHOR
 
-Author: Mark Ferris <m.ferris@geac.com>
+Author: Mark Ferris <mark.ferris@geac.com>
 
 =head1 COPYRIGHT
 
